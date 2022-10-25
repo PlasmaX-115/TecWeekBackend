@@ -28,15 +28,16 @@ def modeloForm():
     contenido = request.form
     print(contenido)
 
-    datosEntrada = np.array ([7.8000, 0.4300, 0.7000, 1.9000, 0.4640, 22.0000, 67.0000, 0.9974,
+    datosEntrada = np.array ([
+        7.8000, 0.4300, 0.7000, 1.9000, 0.4640, 22.0000, 67.0000, 0.9974,
     contenido['pH'],
-    contenido ['sulfatos'],
-    contenido ['alcohol']
+    contenido['sulfatos'],
+    contenido['alcohol']
     ])
 
     #Utilizar el modelo
     resultado=dt.predict(datosEntrada.reshape(1, -1))
-
+    print(resultado)
     return jsonify({"Resultado": str(resultado[0])})
 
     #Convertir un diccionario a json. Será lo que regresaremos
