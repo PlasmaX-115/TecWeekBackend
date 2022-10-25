@@ -38,6 +38,14 @@ def modeloFile():
         print(line)
     return jsonify({"Resultado":"datos recibidos"})
 
+@servidorWeb.route('/modelo', methods=["POST"])
+def model():
+    #Procesar datos de entrada
+    contenido = request.json
+    print(contenido)
+    #Convertir un diccionario a json. Será lo que regresaremos
+    return jsonify({"Resultado":"datos recibidos"})
+
 
 
 if __name__ == '__main__':
