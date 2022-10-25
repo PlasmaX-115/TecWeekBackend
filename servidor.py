@@ -1,9 +1,14 @@
+
+import json
 from stat import filemode
 from flask import Flask, request, jsonify, render_template
 from werkzeug.utils import secure_filename
 from joblib import load
 import numpy as np
 import os
+
+#Cargar el modelo. Ahora se puede usar en toda la aplicación web
+dt = load('modelo.joblib') 
 
 #Generar el servidor en flask (Back-end)
 
@@ -22,8 +27,20 @@ def modeloForm():
     #Procesar datos de entrada
     contenido = request.form
     print(contenido)
+
+    datosEntrada = npArray ([7.8000, 0.4300, 0.7000, 1.9000, 0.4640, 22.0000, 67.0000, 0.9974,
+    contenido['pH'],
+    contenido ['sulfatos'],
+    contenido ['alcohol']
+    ])
+
+    #Utilizar el modelo
+    resultado=dt.predict(datosEntrada.reshape(1, -1))
+
+    return jsonify({"Resultado": str(resultado[0])})
+
     #Convertir un diccionario a json. Será lo que regresaremos
-    return jsonify({"Resultado":"datos recibidos"})
+    #return jsonify({"Resultado":"datos recibidos"})
 
 
 #Procesar datos de un archivo 
@@ -45,6 +62,7 @@ def model():
     print(contenido)
     #Convertir un diccionario a json. Será lo que regresaremos
     return jsonify({"Resultado":"datos recibidos"})
+
 
 
 
