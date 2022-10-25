@@ -20,8 +20,7 @@ def formulario():
 @servidorWeb.route('/modeloIA', methods=["POST"])
 def modeloForm():
     #Procesar datos de entrada
-
-    contenido = request.Form
+    contenido = request.form
     print(contenido)
     #Convertir un diccionario a json. Será lo que regresaremos
     return jsonify({"Resultado":"datos recibidos"})
