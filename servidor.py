@@ -31,7 +31,7 @@ def modeloForm():
 def modeloFile():
     f= request.files['file']
     filename= secure_filename(f.filename)
-    path=os.path.join(os.getcwd, 'files', filename)
+    path=os.path.join(os.getcwd(), filename)
     f.save(path)
     file=open(path,'r') #Se abre un archivo en modo de lectura y lo recorre por cada línea.
     for line in file:
