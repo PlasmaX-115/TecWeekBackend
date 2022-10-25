@@ -28,7 +28,7 @@ def modeloForm():
     contenido = request.form
     print(contenido)
 
-    datosEntrada = npArray ([7.8000, 0.4300, 0.7000, 1.9000, 0.4640, 22.0000, 67.0000, 0.9974,
+    datosEntrada = np.array ([7.8000, 0.4300, 0.7000, 1.9000, 0.4640, 22.0000, 67.0000, 0.9974,
     contenido['pH'],
     contenido ['sulfatos'],
     contenido ['alcohol']
