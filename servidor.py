@@ -47,14 +47,31 @@ def modeloForm():
 #Procesar datos de un archivo 
 @servidorWeb.route('/modeloFile', methods = ['POST'])
 def modeloFile():
-    f= request.files['file']
-    filename= secure_filename(f.filename)
-    path=os.path.join(os.getcwd(), filename)
-    f.save(path)
-    file=open(path,'r') #Se abre un archivo en modo de lectura y lo recorre por cada línea.
-    for line in file:
-        print(line)
-    return jsonify({"Resultado":"datos recibidos"})
+
+    f = request.json
+    print(f)
+
+    datosEntrada = np.array ([
+        7.8000, 0.4300, 0.7000, 1.9000, 0.4640, 22.0000, 67.0000, 0.9974,
+    f['pH'],
+    f['sulfatos'],
+    f['alcohol']
+    ])
+
+    resultado=dt.predict(datosEntrada.reshape(1, -1))
+    print(resultado)
+    return jsonify({"Resultado": str(resultado[0])})
+    
+
+
+    # f= request.files['file']
+    # filename= secure_filename(f.filename)
+    # path=os.path.join(os.getcwd(), filename)
+    # f.save(path)
+    # file=open(path,'r') #Se abre un archivo en modo de lectura y lo recorre por cada línea.
+    # for line in file:
+    #     print(line)
+    # return jsonify({"Resultado":"datos recibidos"})
 
 @servidorWeb.route('/modelo', methods=["POST"])
 def model():
