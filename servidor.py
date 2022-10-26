@@ -1,88 +1,80 @@
+from crypt import methods
+from curses.ascii import isalnum
+from fileinput import filename
 
-import json
-from stat import filemode
 from flask import Flask, request, jsonify, render_template
+# Sirve para trabajar con los archivos que nos llegan de internet
 from werkzeug.utils import secure_filename
+# Sirve para la inteligencia artificial
 from joblib import load
 import numpy as np
 import os
 
-#Cargar el modelo. Ahora se puede usar en toda la aplicación web
-dt = load('modelo.joblib') 
+# Cargar el modelo
+dt = load('modelo.joblib')
 
-#Generar el servidor en flask (Back-end)
+# Generar el servidor en Flask (Back-end)
 
-servidorWeb = Flask(__name__) #Flask recibe la conexión
+servidorWeb = Flask(__name__)
 
-#Anotación
+# Anotación, define la ruta. Después se pone una función
 
-@servidorWeb.route("/test",methods = ['GET'])
 
+@servidorWeb.route("/test", methods=['GET'])
 def formulario():
     return render_template('pagina.html')
 
-#Procesar datos a través del Form 
+# Agregar otro servicio. Procesar datos a través del Form
+
+
 @servidorWeb.route('/modeloIA', methods=["POST"])
 def modeloForm():
-    #Procesar datos de entrada
+    # Procesar datos de entrada
     contenido = request.form
     print(contenido)
 
-    datosEntrada = np.array ([
-        7.8000, 0.4300, 0.7000, 1.9000, 0.4640, 22.0000, 67.0000, 0.9974,
-    contenido['pH'],
-    contenido['sulfatos'],
-    contenido['alcohol']
+    datosEntrada = np.array([
+        7.7000, 0.5600, 0.0800, 2.5000, 0.1140, 14.0000, 46.0000, 0.9971,
+        contenido['pH'],
+        contenido['sulfatos'],
+        contenido['alcohol']
     ])
 
-    #Utilizar el modelo
-    resultado=dt.predict(datosEntrada.reshape(1, -1))
-    print(resultado)
+    # Usar el modelo
+    resultado = dt.predict(datosEntrada.reshape(1, -1))
+
     return jsonify({"Resultado": str(resultado[0])})
 
-    #Convertir un diccionario a json. Será lo que regresaremos
-    #return jsonify({"Resultado":"datos recibidos"})
+# Procesar datos de un archivo
 
 
-#Procesar datos de un archivo 
-@servidorWeb.route('/modeloFile', methods = ['POST'])
+@servidorWeb.route('/modeloFile', methods=["POST"])
 def modeloFile():
-
-    f = request.json
-    print(f)
-
-    datosEntrada = np.array ([
-        7.8000, 0.4300, 0.7000, 1.9000, 0.4640, 22.0000, 67.0000, 0.9974,
-    f['pH'],
-    f['sulfatos'],
-    f['alcohol']
-    ])
-
-    resultado=dt.predict(datosEntrada.reshape(1, -1))
-    print(resultado)
+    f = request.files['file']
+    # PAra poder trabajr con el filename
+    filename = secure_filename(f.filename)
+    path = os.path.join(os.getcwd(), filename)
+    f.save(path)
+    file = open(path, 'r')
+    datos = []
+    # while file.isalnum():
+    for line in file:
+        datos.append(float(line[:-1]))
+    print(datos)
+    datosEntrada = np.array(datos)
+    resultado = dt.predict(datosEntrada.reshape(1, -1))
     return jsonify({"Resultado": str(resultado[0])})
-    
 
+# Para probar con Postman
 
-    # f= request.files['file']
-    # filename= secure_filename(f.filename)
-    # path=os.path.join(os.getcwd(), filename)
-    # f.save(path)
-    # file=open(path,'r') #Se abre un archivo en modo de lectura y lo recorre por cada línea.
-    # for line in file:
-    #     print(line)
-    # return jsonify({"Resultado":"datos recibidos"})
 
 @servidorWeb.route('/modelo', methods=["POST"])
 def model():
-    #Procesar datos de entrada
+    # Procesar datos de entrada (request)
     contenido = request.json
     print(contenido)
-    #Convertir un diccionario a json. Será lo que regresaremos
-    return jsonify({"Resultado":"datos recibidos"})
-
-
+    return jsonify({"Resultado": "datos recibidos Postman"})
 
 
 if __name__ == '__main__':
-    servidorWeb.run(debug=False, host = '0.0.0.0', port = '8080') # Dirección General
+    servidorWeb.run(debug=False, host='0.0.0.0', port='8080')
